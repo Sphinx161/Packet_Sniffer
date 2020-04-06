@@ -1,5 +1,6 @@
 from scapy.all import *
 from scapy.layers import http
+import argparse
 
 
 class Sniffer:
@@ -9,8 +10,15 @@ class Sniffer:
 
     def get_interface(self):
         if conf.route.route("0.0.0.0")[2] == "0.0.0.0":
-            print("Connect to the internet")
-        return conf.iface
+            print("Please Connect to the internet :( ")
+        parser = argparse.ArgumentParser()
+        parser.add_argument("-i", "--interface", dest="interface", help="Provide an interface")
+        values = parser.parse_args()
+        if values.interface:
+            return values.interface
+        else:
+            print("[+] If no interface is given, sniffing will happen on default interface")
+            return conf.iface
 
     def get_url(self, pkt):
         return pkt[http.HTTPRequest].Host + pkt[http.HTTPRequest].Path
@@ -40,3 +48,4 @@ class Sniffer:
 
 obj = Sniffer()
 obj.execute_pkt_sniffer()
+
